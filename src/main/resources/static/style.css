@@ -1,0 +1,160 @@
+:root {
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --text: #1f2430;
+    --muted: #7a8194;
+    --border: #e3e5ea;
+    --primary: #4f6df5;
+    --primary-hover: #3b57d9;
+    --danger: #e5484d;
+    --danger-hover: #c93f43;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+}
+
+main {
+    width: 100%;
+    max-width: 480px;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary);
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 16px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-danger {
+    background: transparent;
+    color: var(--danger);
+    padding: 6px 10px;
+    font-weight: 500;
+}
+
+.btn-danger:hover {
+    background: #fdecec;
+    color: var(--danger-hover);
+}
+
+.btn-danger-solid {
+    display: block;
+    width: 100%;
+    background: var(--danger);
+    color: white;
+    margin-bottom: 12px;
+}
+
+.btn-danger-solid:hover {
+    background: var(--danger-hover);
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+li .task-text {
+    flex: 1;
+    min-width: 0;
+}
+
+li span {
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.due-date {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.due-date.overdue {
+    color: var(--danger);
+}
+
+li.completed span {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.empty, .error {
+    text-align: center;
+    color: var(--muted);
+    padding: 24px;
+    font-size: 14px;
+}
+
+.error {
+    color: var(--danger);
+}

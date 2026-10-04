@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo App</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+    <h1>Moje úlohy</h1>
+
+    <form id="task-form">
+        <input type="text" id="task-title" placeholder="Nová úloha..." required maxlength="255">
+        <input type="datetime-local" id="task-due">
+        <button type="submit" class="btn-primary">Pridať</button>
+    </form>
+
+    <button type="button" id="delete-all-btn" class="btn-danger-solid">Zmazať všetko</button>
+
+    <ul id="task-list"></ul>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
