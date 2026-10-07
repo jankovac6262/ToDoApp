@@ -69,6 +69,17 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Flyway - verzovane SQL migracie databazovej schemy (src/main/resources/db/migration) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <!-- Podpora PostgreSQL pre Flyway je v samostatnom module -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
         <!-- H2 ostava uz len pre testy (rychla in-memory DB) -->
         <dependency>
             <groupId>com.h2database</groupId>
