@@ -1,6 +1,7 @@
 const API_URL = "/api/tasks";
 
 const form = document.getElementById("task-form");
+const priorityInput = document.getElementById("task-priority");
 const titleInput = document.getElementById("task-title");
 const dueInput = document.getElementById("task-due");
 const list = document.getElementById("task-list");
@@ -60,7 +61,17 @@ function renderTasks(tasks) {
                 due.textContent = "Termín: " + formatDueDate(task.dueAt);
                 textWrap.appendChild(due);
             }
-    
+
+            if(task.priority > 0){
+
+                const taskPriority = document.createElement("span");
+                taskPriority.className = "priority";
+                taskPriority.textContent = "Priorita: " + task.priority;
+                textWrap.appendChild(taskPriority);
+
+
+            }
+
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Zmazať";
             deleteBtn.className = "btn-danger";
@@ -75,12 +86,19 @@ function renderTasks(tasks) {
 // Vytvorí novú úlohu (POST) a znovu načíta zoznam
 // dueAt: hodnota z <input type="datetime-local"> je "YYYY-MM-DDTHH:mm",
 // čo backend (LocalDateTime) vie priamo naparsovať; prázdny input -> null
-async function createTask(title, dueAt) {
-    await fetch(API_URL, {
+async function createTask(title, dueAt, priority) {
+   const response =  await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, completed: false, dueAt: dueAt || null })
+        body: JSON.stringify({ title, completed: false, dueAt: dueAt || null ,priority})
     });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(Object.values(error.fields ?? {}).join(", ") || error.message);
+    }
+
+    
     await loadTasks();
 }
 
@@ -108,10 +126,16 @@ form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const title = titleInput.value.trim();
     if (!title) return;
-    await createTask(title, dueInput.value);
-    titleInput.value = "";
-    dueInput.value = "";
-    titleInput.focus();
+    try {
+        await createTask(title, dueInput.value,Number(priorityInput.value));
+        titleInput.value = "";
+        dueInput.value = "";
+        priorityInput.value = "0";
+        titleInput.focus();
+    } catch (error) {
+        alert(error.message);
+        
+    }
 });
 
 deleteAllBtn.addEventListener("click", async () => {

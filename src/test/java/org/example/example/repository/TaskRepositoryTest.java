@@ -36,6 +36,7 @@ class TaskRepositoryTest {
         LocalDateTime due = LocalDateTime.of(2099, 1, 1, 10, 0);
         Task task = task("Uloha", due);
         task.setCompleted(true);
+        task.setPriority(3);
 
         Task saved = taskRepository.save(task);
 
@@ -45,6 +46,7 @@ class TaskRepositoryTest {
         assertThat(loaded.getTitle()).isEqualTo("Uloha");
         assertThat(loaded.isCompleted()).isTrue();
         assertThat(loaded.getDueAt()).isEqualTo(due);
+        assertThat(loaded.getPriority()).isEqualTo(3);
     }
 
     @Test

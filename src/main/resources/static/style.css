@@ -136,6 +136,14 @@ li span {
     color: var(--danger);
 }
 
+.priority {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 2px;
+}
+
 li.completed span {
     text-decoration: line-through;
     color: var(--muted);
