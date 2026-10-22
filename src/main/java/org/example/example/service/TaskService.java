@@ -52,6 +52,8 @@ public class TaskService {
         task.setTitle(updatedTask.getTitle());
         task.setCompleted(updatedTask.isCompleted());
         task.setDueAt(updatedTask.getDueAt());
+        task.setPriority(updatedTask.getPriority());
+        
 
         return this.taskRepository.save(task);
 
@@ -68,6 +70,13 @@ public class TaskService {
             }
             task.setTitle(patch.title());
         }
+
+        if (patch.priority() != null){
+            task.setPriority(patch.priority());
+        }
+
+
+
 
         if (patch.completed() != null) {
             task.setCompleted(patch.completed());

@@ -1,6 +1,8 @@
 package org.example.example.dto;
 
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +18,12 @@ public record TaskPatchDto(
         // Na null sa @Future nevztahuje (null = "pole neposielam"), takze PATCH
         // meniaci iba "completed" prejde bez problemu.
         @Future(message = "Termin musi byt v buducnosti")
-        LocalDateTime dueAt
+        LocalDateTime dueAt,
+
+        // Integer (wrapper): null = "prioritu neposielam, nemen ju".
+        // @Min/@Max sa na null nevztahuju, rovnako ako @Future vyssie.
+        @Min(value = 0, message = "Priorita musi byt od 0 do 5")
+        @Max(value = 5, message = "Priorita musi byt od 0 do 5")
+        Integer priority
 ) {
 }

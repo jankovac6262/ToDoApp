@@ -135,7 +135,36 @@ class TaskControllerTest {
                         .content("{\"title\": \"Len nazov\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.completed").value(false))
-                .andExpect(jsonPath("$.dueAt").isEmpty());
+                .andExpect(jsonPath("$.dueAt").isEmpty())
+                // chybajuca priorita -> 0 (compact konstruktor v TaskRequestDto)
+                .andExpect(jsonPath("$.priority").value(0));
+    }
+
+    @Test
+    void createTask_withPriority_returnsItInResponse() throws Exception {
+        when(taskService.createTask(any(Task.class))).thenAnswer(inv -> {
+            Task t = inv.getArgument(0);
+            t.setId(1L);
+            return t;
+        });
+
+        // Overuje celu cestu pola: JSON -> TaskRequestDto -> Task -> TaskResponseDto -> JSON
+        mockMvc.perform(post("/api/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": \"Dolezita\", \"priority\": 4}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.priority").value(4));
+    }
+
+    @Test
+    void createTask_priorityOutOfRange_returns400WithFieldError() throws Exception {
+        mockMvc.perform(post("/api/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": \"Uloha\", \"priority\": 6}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fields.priority").value("Priorita musi byt od 0 do 5"));
+
+        verifyNoInteractions(taskService);
     }
 
     @Test
@@ -193,11 +222,12 @@ class TaskControllerTest {
 
         mockMvc.perform(put("/api/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"Upravena\", \"completed\": true}"))
+                        .content("{\"title\": \"Upravena\", \"completed\": true, \"priority\": 3}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Upravena"))
-                .andExpect(jsonPath("$.completed").value(true));
+                .andExpect(jsonPath("$.completed").value(true))
+                .andExpect(jsonPath("$.priority").value(3));
     }
 
     @Test
@@ -233,7 +263,7 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.completed").value(true));
 
         // Overime aj, co presne controller poslal do service: len completed, ostatne null
-        verify(taskService).patchTask(1L, new TaskPatchDto(null, true, null));
+        verify(taskService).patchTask(1L, new TaskPatchDto(null, true, null,null));
     }
 
     @Test
@@ -257,6 +287,17 @@ class TaskControllerTest {
                         .content("{\"dueAt\": \"2000-01-01T10:00:00\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.fields.dueAt").exists());
+
+        verify(taskService, never()).patchTask(any(), any());
+    }
+
+    @Test
+    void patchTask_priorityOutOfRange_returns400() throws Exception {
+        mockMvc.perform(patch("/api/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"priority\": -1}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fields.priority").exists());
 
         verify(taskService, never()).patchTask(any(), any());
     }

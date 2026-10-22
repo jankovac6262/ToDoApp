@@ -113,12 +113,16 @@ class TaskServiceTest {
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task result = taskService.updateTask(1L, task(null, "Novy nazov", true, newDue));
+        Task updated = task(null, "Novy nazov", true, newDue);
+        updated.setPriority(4);
+
+        Task result = taskService.updateTask(1L, updated);
 
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getTitle()).isEqualTo("Novy nazov");
         assertThat(result.isCompleted()).isTrue();
         assertThat(result.getDueAt()).isEqualTo(newDue);
+        assertThat(result.getPriority()).isEqualTo(4);
     }
 
     @Test
@@ -153,7 +157,7 @@ class TaskServiceTest {
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task result = taskService.patchTask(1L, new TaskPatchDto(null, true, null));
+        Task result = taskService.patchTask(1L, new TaskPatchDto(null, true, null, null));
 
         assertThat(result.isCompleted()).isTrue();
         assertThat(result.getTitle()).isEqualTo("Uloha");
@@ -166,7 +170,7 @@ class TaskServiceTest {
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task result = taskService.patchTask(1L, new TaskPatchDto("Novy", null, null));
+        Task result = taskService.patchTask(1L, new TaskPatchDto("Novy", null, null, null));
 
         assertThat(result.getTitle()).isEqualTo("Novy");
         assertThat(result.isCompleted()).isTrue();
@@ -179,9 +183,35 @@ class TaskServiceTest {
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task result = taskService.patchTask(1L, new TaskPatchDto(null, null, newDue));
+        Task result = taskService.patchTask(1L, new TaskPatchDto(null, null, newDue, null));
 
         assertThat(result.getDueAt()).isEqualTo(newDue);
+    }
+
+    @Test
+    void patchTask_withPriority_changesOnlyPriority() {
+        Task existing = task(1L, "Uloha", true, null);
+        existing.setPriority(1);
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Task result = taskService.patchTask(1L, new TaskPatchDto(null, null, null, 5));
+
+        assertThat(result.getPriority()).isEqualTo(5);
+        assertThat(result.getTitle()).isEqualTo("Uloha");
+        assertThat(result.isCompleted()).isTrue();
+    }
+
+    @Test
+    void patchTask_nullPriority_leavesPriorityUntouched() {
+        Task existing = task(1L, "Uloha", false, null);
+        existing.setPriority(3);
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Task result = taskService.patchTask(1L, new TaskPatchDto(null, true, null, null));
+
+        assertThat(result.getPriority()).isEqualTo(3);
     }
 
     @Test
@@ -194,7 +224,7 @@ class TaskServiceTest {
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(taskRepository.save(any(Task.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Task result = taskService.patchTask(1L, new TaskPatchDto(null, null, null));
+        Task result = taskService.patchTask(1L, new TaskPatchDto(null, null, null, null));
 
         assertThat(result.getDueAt()).isEqualTo(due);
     }
@@ -204,7 +234,7 @@ class TaskServiceTest {
         Task existing = task(1L, "Uloha", false, null);
         when(taskRepository.findById(1L)).thenReturn(Optional.of(existing));
 
-        assertThatThrownBy(() -> taskService.patchTask(1L, new TaskPatchDto("   ", null, null)))
+        assertThatThrownBy(() -> taskService.patchTask(1L, new TaskPatchDto("   ", null, null, null)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Title nesmie byt prazdny");
 
@@ -217,7 +247,7 @@ class TaskServiceTest {
     void patchTask_missingId_throwsTaskNotFoundException() {
         when(taskRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> taskService.patchTask(99L, new TaskPatchDto(null, true, null)))
+        assertThatThrownBy(() -> taskService.patchTask(99L, new TaskPatchDto(null, true, null, null)))
                 .isInstanceOf(TaskNotFoundException.class);
     }
 

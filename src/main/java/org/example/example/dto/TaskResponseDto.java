@@ -9,6 +9,7 @@ public record TaskResponseDto(
         Long id,
         String title,
         boolean completed,
-        LocalDateTime dueAt
+        LocalDateTime dueAt,
+        int priority
 ) {
 }

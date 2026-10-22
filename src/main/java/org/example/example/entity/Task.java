@@ -31,6 +31,10 @@ public class Task {
     @Column(name = "due_at")
     private LocalDateTime dueAt;
 
+    
+    @Column(nullable = false)
+    private int priority;
+
 
     public Task() {
 
@@ -76,6 +80,17 @@ public class Task {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
+
+    public int getPriority(){
+
+        return priority;
+    }
+
+    public void setPriority(int priority){
+        this.priority = priority;
+
+    }
+
 
 
 

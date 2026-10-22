@@ -55,6 +55,7 @@ public class TaskController {
         Task task = new Task(request.title());
         task.setCompleted(request.completed());
         task.setDueAt(request.dueAt());
+        task.setPriority(request.priority());
         return toResponseDto(taskService.createTask(task));
     }
 
@@ -64,6 +65,7 @@ public class TaskController {
         Task updatedData = new Task(request.title());
         updatedData.setCompleted(request.completed());
         updatedData.setDueAt(request.dueAt());
+        updatedData.setPriority(request.priority());
         return toResponseDto(taskService.updateTask(id, updatedData));
     }
 
@@ -94,6 +96,6 @@ public class TaskController {
 
     // Pomocna mapovacia metoda: entita Task (interny tvar dat) -> TaskResponseDto (verejny tvar dat pre API)
     private TaskResponseDto toResponseDto(Task task) {
-        return new TaskResponseDto(task.getId(), task.getTitle(), task.isCompleted(),task.getDueAt());
+        return new TaskResponseDto(task.getId(), task.getTitle(), task.isCompleted(),task.getDueAt(),task.getPriority());
     }
 }
