@@ -21,7 +21,7 @@ async function loadTasks() {
         if (!response.ok) throw new Error("Nepodarilo sa načítať úlohy");
         const tasks = await response.json();
         renderTasks(tasks);
-        console.log(tasks);
+       
     } catch (err) {
         list.innerHTML = `<li class="error">${err.message}</li>`;
     }
@@ -72,12 +72,59 @@ function renderTasks(tasks) {
 
             }
 
+
+            const select = document.createElement("select");
+            select.className = "task-priority-select";
+
+
+
+            for(let i= 0 ; i < 6;i++){
+
+            const option = document.createElement("option");
+            option.value = i;
+
+            if(i === 0){
+
+                option.textContent = "Bez priority";
+
+            }else{
+
+                option.textContent = i;
+            }
+            
+
+            select.appendChild(option);
+
+
+            }
+
+
+            select.value = task.priority;
+
+
+             select.addEventListener("change", async()=>{
+
+
+
+              try {
+
+                 await changePriority(task.id, Number(select.value));
+
+              }catch (error) {
+
+                alert(error.message);
+              } 
+
+
+            });
+
+
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Zmazať";
             deleteBtn.className = "btn-danger";
             deleteBtn.addEventListener("click", () => deleteTask(task.id));
     
-            li.append(checkbox, textWrap, deleteBtn);
+            li.append(checkbox, textWrap, deleteBtn,select);
             list.appendChild(li);
         
     });
@@ -112,6 +159,30 @@ async function toggleCompleted(task) {
     await loadTasks();
 }
 
+async function changePriority(id,priority){
+
+
+     const response = await fetch(`${API_URL}/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priority  })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(Object.values(error.fields ?? {}).join(", ") || error.message);
+    }
+
+
+
+    await loadTasks();
+}
+
+
+
+
+
+
 async function deleteTask(id) {
     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
     await loadTasks();
@@ -137,6 +208,7 @@ form.addEventListener("submit", async (e) => {
         
     }
 });
+
 
 deleteAllBtn.addEventListener("click", async () => {
     if (!confirm("Naozaj zmazať všetky úlohy?")) return;
